@@ -29,6 +29,10 @@ clf.fit(X_train, y_train)
 y_pred = clf.predict(X_test)
 print("Validation Accuracy:", accuracy_score(y_test, y_pred))
 print(classification_report(y_test, y_pred))
+# Save RF accuracy to file for summary
+with open("rf_result.txt", "w") as f:
+    f.write(f"{accuracy_score(y_test, y_pred):.4f}")
+
 
 # Save model
 joblib.dump(clf, "rf_model.pkl")
