@@ -1,1 +1,2 @@
-timestamp,accZ,mov_avg,rms,fft_peak,label
+features = ['accZ', 'mov_avg', 'rms', 'fft_peak']
+
