@@ -1,0 +1,25 @@
+import os
+from datetime import datetime
+
+# Generate summary
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+summary_filename = f"model_summary_{timestamp}.txt"
+
+# Simulate model results for this demo
+rf_accuracy = 0.92
+lstm_accuracy = 0.89
+summary = f"""
+Model Training Summary - {timestamp}
+
+Random Forest:
+- Validation Accuracy: {rf_accuracy:.2f}
+
+LSTM:
+- Validation Accuracy: {lstm_accuracy:.2f}
+"""
+
+# Save to text file
+with open(summary_filename, "w") as f:
+    f.write(summary)
+
+summary_filename
