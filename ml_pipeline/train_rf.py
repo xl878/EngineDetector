@@ -11,10 +11,22 @@ input_file = log_files[-1] if log_files else None
 if input_file is None:
     raise FileNotFoundError("No log_*.csv file found.")
 print(f"Using latest file: {input_file}")
-df = pd.read_csv(input_file)
+df = pd.read_csv('log_20250330_115813.csv')
 
 # Features and labels
-X = df[["accZ", "mov_avg", "rms", "fft_peak"]]
+expected_features = ["accZ", "mov_avg", "rms", "fft_peak"]
+missing = [f for f in expected_features if f not in df.columns]
+
+if missing:
+    print(f"⚠️ Warning: Missing expected features: {missing}")
+    numeric_cols = df.select_dtypes(include='number').columns.tolist()
+    excluded = ["timestamp", "label"]
+    features = [col for col in numeric_cols if col not in excluded]
+    print(f"→ Using auto-detected features: {features}")
+else:
+    features = expected_features
+
+X = df[features]
 y = df["label"]
 
 # Split
