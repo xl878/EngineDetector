@@ -29,6 +29,9 @@ model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.1)
 # Evaluate
 loss, acc = model.evaluate(X_test, y_test)
 print(f"Validation Accuracy: {acc:.4f}")
+# Save LSTM accuracy to file for summary
+with open("lstm_result.txt", "w") as f:
+    f.write(f"{val_accuracy:.4f}")
 
 # Save model
 model.save("lstm_model.h5")
