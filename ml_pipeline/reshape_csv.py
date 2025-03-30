@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # Parameters
-input_file = "data.csv"
+input_file = "log_20250330_115813.csv"
 seq_len = 20  # number of timesteps
 
 # Load CSV
