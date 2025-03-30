@@ -5,8 +5,13 @@ from sklearn.metrics import classification_report, accuracy_score
 import joblib
 
 # Load CSV
-print("Loading data.csv...")
-df = pd.read_csv("data.csv")
+import os
+log_files = sorted([f for f in os.listdir() if f.startswith("log_") and f.endswith(".csv")])
+input_file = log_files[-1] if log_files else None
+if input_file is None:
+    raise FileNotFoundError("No log_*.csv file found.")
+print(f"Using latest file: {input_file}")
+df = pd.read_csv(input_file)
 
 # Features and labels
 X = df[["rms", "fft_peak", "fft_centroid"]]  # adjust as needed
