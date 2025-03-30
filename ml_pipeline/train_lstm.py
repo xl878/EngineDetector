@@ -4,34 +4,43 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
+import os
 
-# Load CSV
-df = pd.read_csv("log_20250330_115813.csv")
+# Automatically select latest log file
+log_files = sorted([f for f in os.listdir() if f.startswith("log_") and f.endswith(".csv")])
+if not log_files:
+    raise FileNotFoundError("No log_*.csv file found")
+input_file = log_files[-1]
+print(f"Using log file: {input_file}")
 
-# Load features and label
-X = df[["accZ", "mov_avg", "rms", "fft_peak"]].values
-y_raw = df["label"].values
+# Load data
+seq_len = 20  # number of timesteps
+raw_df = pd.read_csv(input_file)
+features = ["accZ", "mov_avg", "rms", "fft_peak"]
+X_data = raw_df[features].values
+y_data = raw_df["label"].astype("category").cat.codes.values
 
-# Encode string labels to integers
-le = LabelEncoder()
-y_encoded = le.fit_transform(y_raw)
-y = to_categorical(y_encoded)
+# Create sequences
+def create_sequences(X, y, seq_len):
+    Xs, ys = [], []
+    for i in range(len(X) - seq_len):
+        Xs.append(X[i:i + seq_len])
+        ys.append(y[i + seq_len])
+    return np.array(Xs), np.array(ys)
 
-# Split into train/test
+X, y = create_sequences(X_data, y_data, seq_len)
+y = to_categorical(y)
+
+# Train-test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Reshape input for LSTM: (samples, timesteps, features)
-X_train = X_train.reshape((X_train.shape[0], 1, X_train.shape[1]))
-X_test = X_test.reshape((X_test.shape[0], 1, X_test.shape[1]))
-
-# Build model
+# Build LSTM model
 model = Sequential()
-model.add(LSTM(32, input_shape=(X_train.shape[1], X_train.shape[2])))
+model.add(LSTM(64, input_shape=(X.shape[1], X.shape[2])))
 model.add(Dense(y.shape[1], activation='softmax'))
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-# Train
+# Train model
 model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.2)
 
 # Evaluate
