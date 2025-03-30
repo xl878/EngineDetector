@@ -31,7 +31,7 @@ loss, acc = model.evaluate(X_test, y_test)
 print(f"Validation Accuracy: {acc:.4f}")
 # Save LSTM accuracy to file for summary
 with open("lstm_result.txt", "w") as f:
-    f.write(f"{val_accuracy:.4f}")
+    f.write(f"{acc:.4f}")
 
 # Save model
 model.save("lstm_model.h5")
