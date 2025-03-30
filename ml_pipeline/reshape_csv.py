@@ -2,7 +2,13 @@ import pandas as pd
 import numpy as np
 
 # Parameters
-input_file = "log_20250330_115813.csv"
+import os
+log_files = sorted([f for f in os.listdir() if f.startswith("log_") and f.endswith(".csv")])
+input_file = log_files[-1] if log_files else None
+if input_file is None:
+    raise FileNotFoundError("No log_*.csv file found in this directory.")
+print(f"Using latest file: {input_file}")
+
 seq_len = 20  # number of timesteps
 
 # Load CSV
