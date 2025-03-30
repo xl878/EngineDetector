@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ML Data QA Dashboard</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    #charts { display: flex; gap: 20px; }
+    canvas { border: 1px solid #ccc; }
+    .panel { margin-bottom: 15px; }
+    label { margin-right: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Real-Time Vibration & FFT Monitor</h1>
+
+  <div class="panel">
+    <button id="connectBtn">🔌 Connect to Arduino</button>
+    <label>Window (ms): <input type="number" id="windowSize" value="2000" min="500"></label>
+    <label><input type="checkbox" id="multiWindow" checked> Dual-window mode</label>
+  </div>
+
+  <div class="panel">
+    <label>Label: <input type="text" id="labelInput" placeholder="e.g., Startup"></label>
+    <button onclick="sendLabel()">Send Label</button>
+  </div>
+
+  <div id="charts">
+    <canvas id="vibrationChart" width="500" height="200"></canvas>
+    <canvas id="fftChart" width="500" height="200"></canvas>
+  </div>
+
+  <div class="panel">
+    <h3>Live Stats</h3>
+    <p id="liveStats">RMS: ---, FFT Peak: ---, FFT Centroid: ---</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
