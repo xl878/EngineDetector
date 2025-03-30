@@ -4,25 +4,29 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
 import joblib
 
-# Load CSV
+# Load latest .csv log
+import pandas as pd
 import os
-log_files = sorted([f for f in os.listdir() if f.startswith("log_") and f.endswith(".csv")])
-input_file = log_files[-1] if log_files else None
-if input_file is None:
-    raise FileNotFoundError("No log_*.csv file found.")
-print(f"Using latest file: {input_file}")
-df = pd.read_csv('log_20250330_115813.csv')
 
-# Features and labels
-expected_features = ["accZ", "mov_avg", "rms", "fft_peak"]
+log_files = sorted([f for f in os.listdir() if f.startswith("log_") and f.endswith(".csv")])
+if not log_files:
+    raise FileNotFoundError("❌ No log CSV file found")
+input_file = log_files[-1]
+print(f"📂 Using latest file: {input_file}")
+df = pd.read_csv(input_file)
+
+# Safe feature selection
+numeric_cols = df.select_dtypes(include='number').columns.tolist()
+excluded = ["timestamp", "label"]
+auto_features = [col for col in numeric_cols if col not in excluded]
+
+expected_features = ["accZ", "mov_avg", "rms", "fft_peak", "fft_centroid"]
 missing = [f for f in expected_features if f not in df.columns]
 
 if missing:
-    print(f"⚠️ Warning: Missing expected features: {missing}")
-    numeric_cols = df.select_dtypes(include='number').columns.tolist()
-    excluded = ["timestamp", "label"]
-    features = [col for col in numeric_cols if col not in excluded]
-    print(f"→ Using auto-detected features: {features}")
+    print(f"⚠️  Missing expected features: {missing}")
+    features = auto_features
+    print(f"✅ Using fallback numeric features: {features}")
 else:
     features = expected_features
 
