@@ -1,13 +1,13 @@
 from datetime import datetime
 
-# Load saved accuracies
+# Read saved results
 with open("rf_result.txt") as f:
-    rf_accuracy = float(f.read().strip())
+    rf_accuracy = float(f.read())
 
 with open("lstm_result.txt") as f:
-    lstm_accuracy = float(f.read().strip())
+    lstm_accuracy = float(f.read())
 
-# Generate timestamped filename
+# Timestamp
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 summary_filename = f"model_summary_{timestamp}.txt"
 
@@ -15,14 +15,14 @@ summary_filename = f"model_summary_{timestamp}.txt"
 summary = f"""Model Training Summary – {timestamp}
 
 Random Forest:
-- Validation Accuracy: {rf_accuracy:.4f}
+– Validation Accuracy: {rf_accuracy:.4f}
 
 LSTM:
-- Validation Accuracy: {lstm_accuracy:.4f}
+– Validation Accuracy: {lstm_accuracy:.4f}
 """
 
-# Write summary to file
+# Save to file
 with open(summary_filename, "w") as f:
     f.write(summary)
 
-print(f"[✓] Summary written to {summary_filename}")
+print(f"[✓] Summary saved to: {summary_filename}")
