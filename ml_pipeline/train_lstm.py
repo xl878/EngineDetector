@@ -15,9 +15,23 @@ print(f"Using log file: {input_file}")
 
 # Load data
 seq_len = 20  # number of timesteps
-raw_df = pd.read_csv(input_file)
-features = ["accZ", "mov_avg", "rms", "fft_peak"]
+raw_df = pd.read_csv('log_20250330_115813.csv')
+# Auto-detect numeric features, exclude label and timestamp
+numeric_cols = raw_df.select_dtypes(include='number').columns.tolist()
+excluded = ["timestamp", "label"]
+features = [col for col in numeric_cols if col not in excluded]
+
+# Check if user-specified features are missing
+expected_features = ["accZ", "rms", "fft_peak"]
+missing = [f for f in expected_features if f not in raw_df.columns]
+if missing:
+    print(f"⚠️ Warning: Missing expected features: {missing}")
+    print(f"→ Using auto-detected numeric features: {features}")
+else:
+    features = expected_features
+
 X_data = raw_df[features].values
+
 y_data = raw_df["label"].astype("category").cat.codes.values
 
 # Create sequences
