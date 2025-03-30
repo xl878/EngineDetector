@@ -14,7 +14,7 @@ print(f"Using latest file: {input_file}")
 df = pd.read_csv(input_file)
 
 # Features and labels
-X = df[["rms", "fft_peak", "fft_centroid"]]  # adjust as needed
+X = df[["accZ", "mov_avg", "rms", "fft_peak"]]
 y = df["label"]
 
 # Split
