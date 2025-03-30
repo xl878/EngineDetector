@@ -51,5 +51,11 @@ print(f"Validation Accuracy: {acc:.4f}")
 with open("lstm_result.txt", "w") as f:
     f.write(f"{acc:.4f}")
 
+# Save the input file used
+with open("used_log.txt") as f:
+    log_used = f.read().strip()
+
+summary += f"\nInput data used: {log_used}\n"
+
 # Save model
 model.save("lstm_model.h5")
