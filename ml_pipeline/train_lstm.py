@@ -1,30 +1,38 @@
 import numpy as np
+import pandas as pd
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 
-# Load data
-X = np.load("X_sequences.npy")  # shape: (samples, timesteps, features)
-y = np.load("y_sequences.npy")
+# Load CSV
+df = pd.read_csv("log_20250330_115813.csv")
 
-# Encode labels
-num_classes = len(np.unique(y))
-y = to_categorical(y, num_classes=num_classes)
+# Load features and label
+X = df[["accZ", "mov_avg", "rms", "fft_peak"]].values
+y_raw = df["label"].values
 
-# Split
+# Encode string labels to integers
+le = LabelEncoder()
+y_encoded = le.fit_transform(y_raw)
+y = to_categorical(y_encoded)
+
+# Split into train/test
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Define model
-model = Sequential()
-model.add(LSTM(64, input_shape=(X.shape[1], X.shape[2])))
-model.add(Dense(num_classes, activation='softmax'))
+# Reshape input for LSTM: (samples, timesteps, features)
+X_train = X_train.reshape((X_train.shape[0], 1, X_train.shape[1]))
+X_test = X_test.reshape((X_test.shape[0], 1, X_test.shape[1]))
 
+# Build model
+model = Sequential()
+model.add(LSTM(32, input_shape=(X_train.shape[1], X_train.shape[2])))
+model.add(Dense(y.shape[1], activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # Train
-print("Training LSTM...")
-model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.1)
+model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.2)
 
 # Evaluate
 loss, acc = model.evaluate(X_test, y_test)
@@ -36,4 +44,3 @@ with open("lstm_result.txt", "w") as f:
 
 # Save model
 model.save("lstm_model.h5")
-print("Model saved to lstm_model.h5")
