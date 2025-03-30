@@ -1,6 +1,5 @@
 let port;
 let reader;
-let inputDone;
 let inputStream;
 
 const vibrationCtx = document.getElementById('vibrationChart').getContext('2d');
@@ -61,7 +60,6 @@ function processLine(line) {
   }
   fftChart.update();
 
-  // Example live stats
   document.getElementById('liveStats').innerText = `RMS: ${amp.toFixed(3)}, FFT Peak: ${freq.toFixed(1)}, FFT Centroid: ---`;
 }
 
@@ -75,3 +73,39 @@ function sendLabel() {
 }
 
 document.getElementById('connectBtn').addEventListener('click', connectSerial);
+
+// Playback mode simulation
+function startPlayback() {
+  if (!document.getElementById('playbackToggle').checked) return;
+  const pattern = document.getElementById('patternSelect').value;
+  if (pattern === 'pulse') simulatePulse();
+  else if (pattern === 'sweep') simulateSweep();
+  else simulateIdle();
+}
+
+function simulatePulse() {
+  let angle = 0;
+  let direction = 1;
+  const interval = setInterval(() => {
+    angle += direction * 40;
+    if (angle >= 180 || angle <= 0) direction *= -1;
+    document.getElementById('servoBar').style.width = angle + '%';
+    document.getElementById('stepperDir').innerText = `Stepper: ${direction > 0 ? '➡️' : '⬅️'}`;
+  }, 400);
+  setTimeout(() => clearInterval(interval), 6000);
+}
+
+function simulateSweep() {
+  let angle = 0;
+  const interval = setInterval(() => {
+    angle = (angle + 10) % 180;
+    document.getElementById('servoBar').style.width = angle + '%';
+    document.getElementById('stepperDir').innerText = 'Stepper: ➡️⏩';
+  }, 300);
+  setTimeout(() => clearInterval(interval), 6000);
+}
+
+function simulateIdle() {
+  document.getElementById('servoBar').style.width = '0%';
+  document.getElementById('stepperDir').innerText = 'Stepper: (off)';
+}
