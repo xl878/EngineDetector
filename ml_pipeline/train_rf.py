@@ -39,6 +39,10 @@ accuracy = accuracy_score(y_test, y_pred)
 with open("rf_result.txt", "w") as f:
     f.write(f"{accuracy:.4f}")
 
+# Save the input file used
+with open("used_log.txt", "w") as f:
+    f.write(input_file)
+
 # Save model
 joblib.dump(clf, "rf_model.pkl")
 print("Model saved to rf_model.pkl")
